@@ -1,40 +1,42 @@
-import {CommonJSONObject} from "./menu";
+import { CommonJSONObject } from './menu'
 
-export function getProperty(options: CommonJSONObject, opt: string, def: unknown){
-    return isDefined(options[opt]) ? options[opt]: def
+export function getProperty (options: CommonJSONObject, opt: string, def: any): any {
+  return isDefined(options[opt]) ? options[opt] : def
 }
 
-export function getSizes(obj: HTMLElement){
-    const li_arr = Array.from(obj.getElementsByTagName('li'));
+export function getSizes (obj: HTMLElement): { width: number, height: number } {
+  const liArr = Array.from(obj.getElementsByTagName('li'))
 
-    let width_def = 0, height_def = 0;
-    for(let li of li_arr){
-        width_def = Math.max(li.offsetWidth , width_def);
-        height_def = Math.max(li.offsetHeight , height_def);
+  let widthDef = 0
+  let heightDef = 0
+  for (const li of liArr) {
+    widthDef = Math.max(li.offsetWidth, widthDef)
+    heightDef = Math.max(li.offsetHeight, heightDef)
+  }
+
+  let width = widthDef
+  let height = heightDef
+  for (const li of liArr) {
+    const ul = li.getElementsByTagName('ul')
+    const firstUl = ul[0]
+    if (isDefined(firstUl)) {
+      const ulSize = getSizes(firstUl)
+      width = Math.max(widthDef + ulSize.width, width)
+      height = Math.max(heightDef + ulSize.height, height)
     }
+  }
 
-    let width = width_def, height = height_def;
-    for(let li of li_arr){
-        const ul = li.getElementsByTagName('ul');
-        const first_ul = ul[0]
-        if(isDefined(first_ul)){
-            const ul_size = getSizes(first_ul);
-            width = Math.max(width_def + ul_size.width, width)
-            height = Math.max(height_def + ul_size.height, height)
-        }
-    }
-
-    return { width, height };
+  return { width, height }
 }
 
-export function isUndefined(obj: unknown){
-    return typeof obj === "undefined"
+export function isUndefined (obj: any): boolean {
+  return typeof obj === 'undefined'
 }
 
-export function isDefined(obj: unknown){
-    return !isUndefined(obj)
+export function isDefined (obj: any): boolean {
+  return !isUndefined(obj)
 }
 
-export function isObject(obj: unknown){
-    return  obj !== null  && typeof obj === "object"
+export function isObject (obj: any): boolean {
+  return obj !== null && typeof obj === 'object'
 }

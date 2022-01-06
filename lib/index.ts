@@ -1,2 +1,2 @@
-import {ContextMenu} from "./menu";
+import { ContextMenu } from './menu'
 export default ContextMenu

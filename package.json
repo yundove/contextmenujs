@@ -1,16 +1,24 @@
 {
-  "name": "contextmenujs",
-  "version": "0.0.0",
+  "name": "@cps/contextmenujs",
+  "version": "0.0.2-alpha.1",
+  "module": "./dist/contextmenujs.es.js",
+  "main": "./dist/contextmenujs.umd.js",
   "scripts": {
     "dev": "vite",
     "build": "tsc; vite build",
-    "preview": "vite preview"
+    "lint": "ts-standard"
   },
   "devDependencies": {
+    "ts-standard": "^11.0.0",
     "typescript": "^4.4.4",
     "vite": "^2.7.2"
   },
   "dependencies": {
     "nanoid": "^3.1.30"
+  },
+  "ts-standard": {
+    "files": [
+      "./lib"
+    ]
   }
 }
