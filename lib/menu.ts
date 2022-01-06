@@ -58,13 +58,13 @@ export class ContextMenu {
     this.reload()
   }
 
-  onWindowResize () {
-    if (getProperty(this.options as CommonJSONObject, 'close_on_resize', true)) {
+  onWindowResize (): void {
+    if (getProperty(this.options as CommonJSONObject, 'close_on_resize', true) as boolean) {
       this.hide()
     }
   }
 
-  setOptions (options: unknown) {
+  setOptions (options: unknown): void {
     if (isObject(options)) {
       this.options = options as ContextMenuOptions
     } else {
@@ -72,7 +72,7 @@ export class ContextMenu {
     }
   };
 
-  changeOption (option: unknown, value: any) {
+  changeOption (option: unknown, value: any): void {
     if (typeof option === 'string') {
       if (isDefined(value)) {
         this.options[option as ContextMenuOption] = value
@@ -84,28 +84,26 @@ export class ContextMenu {
     }
   };
 
-  getOptions () {
+  getOptions (): ContextMenuOptions {
     return this.options
   };
 
-  reload () {
+  reload (): void {
     const menu = this.menu
-    if (this.dom == null) {
+    if (this.dom === null) {
       this.addDom()
     }
 
-    const container = this.dom
-    container!.innerHTML = ''
-    container!.appendChild(this.renderLevel(menu))
+    const container = this.dom as HTMLElement
+    container.innerHTML = ''
+    container.appendChild(this.renderLevel(menu))
   };
 
-  display (e: MouseEvent, target?: EventTarget) {
-    const self = this
+  display (e: MouseEvent, target?: EventTarget): void {
+    const options = this.options
+    this.context_target = isDefined(target) ? target : e.target
 
-    const options = self.options
-    self.context_target = isDefined(target) ? target : e.target
-
-    const menu = this.dom!
+    const menu = this.dom as HTMLElement
     const clickCoords = { x: e.clientX, y: e.clientY }
     const clickCoordsX = clickCoords.x
     const clickCoordsY = clickCoords.y
@@ -116,15 +114,15 @@ export class ContextMenu {
     const mouseOffset = parseInt(getProperty(options, 'mouse_offset', 2) as string)
 
     if (windowWidth - clickCoordsX < menuWidth) {
-      menu.style.left = windowWidth - menuWidth + 'px'
+      menu.style.left = `${windowWidth - menuWidth}px`
     } else {
-      menu.style.left = clickCoordsX + mouseOffset + 'px'
+      menu.style.left = `${clickCoordsX + mouseOffset}px`
     }
 
     if (windowHeight - clickCoordsY < menuHeight) {
-      menu.style.top = windowHeight - menuHeight + 'px'
+      menu.style.top = `${windowHeight - menuHeight}px`
     } else {
-      menu.style.top = clickCoordsY + mouseOffset + 'px'
+      menu.style.top = `${clickCoordsY + mouseOffset}px`
     }
 
     const sizes = getSizes(menu)
@@ -143,24 +141,24 @@ export class ContextMenu {
 
     menu.classList.add('display')
 
-    if (getProperty(options, 'close_on_click', true)) {
+    if (getProperty(options, 'close_on_click', true) as boolean) {
       window.addEventListener('click', this.onDocumentClick)
     }
 
     e.preventDefault()
   };
 
-  hide () {
+  hide (): void {
     this.dom?.classList.remove('display')
     window.removeEventListener('click', this.onDocumentClick)
   }
 
-  get dom () {
+  get dom (): HTMLElement| null {
     const id = this.instance_id
     return document.getElementById(id)
   }
 
-  addDom () {
+  addDom (): void {
     const id = this.instance_id
     const dom = document.createElement('div')
     dom.className = 'cm_container'
@@ -168,52 +166,51 @@ export class ContextMenu {
     document.body.appendChild(dom)
   }
 
-  onDocumentClick () {
+  onDocumentClick (): void {
     this.hide()
   }
 
-  renderLevel (level: ContextMenuItems) {
-    const self = this
-    const options = self.options
-    const ul_outer = document.createElement('ul')
-    level.forEach(function (item) {
+  renderLevel (level: ContextMenuItems): HTMLUListElement {
+    const options = this.options
+    const ulOuter = document.createElement('ul')
+    level.forEach((item) => {
       const li = document.createElement('li')
 
       if (isUndefined(item.type)) {
-        const icon_span = document.createElement('span')
-        icon_span.className = 'cm_icon_span'
+        const iconSpan = document.createElement('span')
+        iconSpan.className = 'cm_icon_span'
 
-        if (getProperty(item, 'icon', '') != '') {
-          icon_span.innerHTML = getProperty(item, 'icon', '') as string
+        if (getProperty(item, 'icon', '') !== '') {
+          iconSpan.innerHTML = getProperty(item, 'icon', '') as string
         } else {
-          icon_span.innerHTML = getProperty(options, 'default_icon', '') as string
+          iconSpan.innerHTML = getProperty(options, 'default_icon', '') as string
         }
 
-        const text_span = document.createElement('span')
-        text_span.className = 'cm_text'
+        const textSpan = document.createElement('span')
+        textSpan.className = 'cm_text'
 
-        if (getProperty(item, 'text', '') != '') {
-          text_span.innerHTML = getProperty(item, 'text', '') as string
+        if (getProperty(item, 'text', '') !== '') {
+          textSpan.innerHTML = getProperty(item, 'text', '') as string
         } else {
-          text_span.innerHTML = getProperty(self.options, 'default_text', 'item') as string
+          textSpan.innerHTML = getProperty(this.options, 'default_text', 'item') as string
         }
 
-        const sub_span = document.createElement('span')
-        sub_span.className = 'cm_sub_span'
+        const subSpan = document.createElement('span')
+        subSpan.className = 'cm_sub_span'
 
         if (typeof item.sub !== 'undefined') {
-          if (getProperty(options, 'sub_icon', '') != '') {
-            sub_span.innerHTML = getProperty(self.options, 'sub_icon', '') as string
+          if (getProperty(options, 'sub_icon', '') !== '') {
+            subSpan.innerHTML = getProperty(this.options, 'sub_icon', '') as string
           } else {
-            sub_span.innerHTML = '&#155;'
+            subSpan.innerHTML = '&#155;'
           }
         }
 
-        li.appendChild(icon_span)
-        li.appendChild(text_span)
-        li.appendChild(sub_span)
+        li.appendChild(iconSpan)
+        li.appendChild(textSpan)
+        li.appendChild(subSpan)
 
-        if (!getProperty(item, 'enabled', true)) {
+        if (!(getProperty(item, 'enabled', true) as boolean)) {
           li.setAttribute('disabled', '')
         } else {
           if (typeof item.events === 'object') {
@@ -225,17 +222,17 @@ export class ContextMenu {
           }
 
           if (typeof item.sub !== 'undefined') {
-            li.appendChild(self.renderLevel(item.sub))
+            li.appendChild(this.renderLevel(item.sub))
           }
         }
       } else {
-        if (item.type == ContextMenuItemType.MENU_DIVIDER) {
+        if (item.type === ContextMenuItemType.MENU_DIVIDER) {
           li.className = ContextMenuItemType.MENU_DIVIDER
         }
       }
 
-      ul_outer.appendChild(li)
+      ulOuter.appendChild(li)
     })
-    return ul_outer
+    return ulOuter
   }
 }
